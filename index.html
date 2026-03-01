@@ -1,285 +1,159 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Banana AI Generator</title>
+// =====================================================
+// 🍌 BANANA GENERATOR V3 - IA EMBARQUÉE HUGGINGFACE
+// =====================================================
 
-<script>
-/* ===============================
-   🔐 TOKEN (MET LE DANS ENV SUR RENDER)
-   =============================== */
-const HF_TOKEN = "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";
-</script>
+require("dotenv").config();
+const express = require("express");
+const fetch = require("node-fetch");
+const path = require("path");
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+const app = express();
+app.use(express.json());
+app.use(express.static("public"));
 
-<style>
+// =====================================================
+// 🔐 TOKEN ENV RENDER
+// Nom de ta clé : Banana
+// =====================================================
 
-/* =============================
-   🌿 BACKGROUND
-============================= */
+const HF_TOKEN = process.env.Banana;
 
-body{
-margin:0;
-font-family:Arial;
-background:#0b3d02;
-background-image:url("https://i.postimg.cc/FHC5G1FX/nano-banana-logo.png");
-background-size:cover;
-background-attachment:fixed;
-overflow-x:hidden;
-color:black;
+if (!HF_TOKEN) {
+  console.log("❌ TOKEN Banana NON DETECTÉ");
+} else {
+  console.log("✅ TOKEN Banana DETECTÉ");
 }
 
-/* TITLE */
+// =====================================================
+// 🤖 MODELE HUGGINGFACE
+// =====================================================
 
-h1{
-text-align:center;
-color:white;
-font-weight:bold;
-font-size:40px;
-text-shadow:0 0 20px lime;
+const HF_API = "https://router.huggingface.co/hf-inference/models/distilgpt2";
+
+async function generateAI(prompt) {
+  const response = await fetch(HF_API, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${HF_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      inputs: prompt,
+      parameters: {
+        max_new_tokens: 300,
+        temperature: 1.2,
+        top_p: 0.95,
+        do_sample: true
+      }
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return "🔥 ERREUR IA : " + JSON.stringify(data);
+  }
+
+  return data[0]?.generated_text || "No output";
 }
 
-/* =============================
-   BUTTONS
-============================= */
+// =====================================================
+// 🎛 LISTES OPTIMISÉES
+// =====================================================
 
-button{
-background:yellow;
-color:black;
-font-size:22px;
-padding:15px 30px;
-border:none;
-border-radius:20px;
-cursor:pointer;
-margin:10px;
-font-weight:bold;
-transition:0.3s;
-}
-
-button:hover{
-transform:scale(1.1);
-box-shadow:0 0 20px yellow;
-}
-
-button.generate{
-background:red;
-color:white;
-}
-
-button.copy{
-background:green;
-color:white;
-}
-
-/* =============================
-   SELECT
-============================= */
-
-select{
-background:gold;
-font-size:20px;
-padding:15px;
-border-radius:15px;
-font-weight:bold;
-}
-
-.container{
-text-align:center;
-padding:40px;
-}
-
-/* TEXTAREA */
-
-textarea{
-width:80%;
-height:200px;
-font-size:18px;
-border-radius:15px;
-padding:15px;
-}
-
-</style>
-</head>
-<body>
-
-<h1>🍌 BANANA AI PROMPT GENERATOR</h1>
-
-<div class="container">
-
-<!-- ========================= -->
-<!-- PARAMETRES -->
-<!-- ========================= -->
-
-Genre:
-<select id="genre">
-<option>Homme</option>
-<option>Femme</option>
-</select>
-
-Age:
-<select id="age"></select>
-
-Haut:
-<select id="haut"></select>
-
-Bas:
-<select id="bas"></select>
-
-Fond:
-<select id="fond"></select>
-
-Angle:
-<select id="angle">
-<option>Face</option>
-<option>Profil</option>
-<option>3/4</option>
-<option>Dos</option>
-</select>
-
-<br><br>
-
-<button class="generate" onclick="generate()">🚀 GENERER</button>
-<button class="copy" onclick="copyText()">📋 COPIER</button>
-
-<br><br>
-
-<textarea id="output"></textarea>
-
-</div>
-
-<script>
-
-/* =============================
-   LISTES AUGMENTÉES
-============================= */
-
-let hauts = [
-"T-shirt","T-shirt Oversize","T-shirt Slim","Chemise","Blazer",
-"Top Dentelle","Top Sport","Hoodie","Sweat","Crop Top",
-"Débardeur","Veste Cuir","Top Luxe","Pull","Chemise Satin"
+const HAUTS = [
+"T-shirt oversize","T-shirt slim","Chemise luxe","Blazer","Top dentelle",
+"Hoodie","Veste cuir","Crop top","Top sport","Débardeur","Chemise lin",
+"Pull laine","Haut minimaliste","Haut streetwear","Haut fashion"
 ];
 
-let bas = [
-"Jean","Jean Slim","Jean Wide","Pantalon","Chino",
-"Short","Short Denim","Legging","Jupe","Mini Jupe",
-"Pantalon Tailleur","Cargo","Jogging","Pantalon Large"
+const BAS = [
+"Jean slim","Jean regular","Cargo","Pantalon tailleur","Short",
+"Jupe","Legging","Chino","Pantalon large","Short en jean",
+"Pantalon cuir","Pantalon sport","Pantalon droit"
 ];
 
-let fonds = [
-"Rooftop Skyline","Hôtel Luxe","Plage Privée","Villa Piscine",
-"Studio Photo","Rue Urbaine","Forêt Lumineuse",
-"Restaurant Luxe","Galerie Art","Intérieur Minimaliste"
+const FONDS = [
+"Rooftop skyline","Plage privée","Villa luxe","Hôtel 5 étoiles",
+"Studio photo pro","Rue urbaine nuit","Forêt lumineuse",
+"Galerie art","Piscine infinity","Intérieur minimaliste",
+"Restaurant chic","Terrasse soleil","Appartement design"
 ];
 
-/* AGE AUTO */
+const ANGLES = [
+"Face","3/4 gauche","3/4 droite","Profil gauche",
+"Profil droit","Légère contre-plongée","Vue hauteur yeux"
+];
 
-let ageSelect = document.getElementById("age");
-for(let i=18;i<=60;i++){
-let opt=document.createElement("option");
-opt.textContent=i;
-ageSelect.appendChild(opt);
-}
+// =====================================================
+// 🔥 GENERATE PROMPT
+// =====================================================
 
-/* FILL SELECT */
+app.post("/generate", async (req, res) => {
 
-function fill(id,list){
-let s=document.getElementById(id);
-list.forEach(item=>{
-let o=document.createElement("option");
-o.textContent=item;
-s.appendChild(o);
-});
-}
+  const {
+    genre,
+    age,
+    autoMode,
+    haut,
+    bas,
+    fond,
+    angle
+  } = req.body;
 
-fill("haut",hauts);
-fill("bas",bas);
-fill("fond",fonds);
+  // ===============================
+  // 🎲 MODE ALÉATOIRE IA
+  // ===============================
 
-/* =============================
-   IA HUGGING FACE
-============================= */
+  const selectedHaut = autoMode ? HAUTS[Math.floor(Math.random()*HAUTS.length)] : haut;
+  const selectedBas = autoMode ? BAS[Math.floor(Math.random()*BAS.length)] : bas;
+  const selectedFond = autoMode ? FONDS[Math.floor(Math.random()*FONDS.length)] : fond;
+  const selectedAngle = autoMode ? ANGLES[Math.floor(Math.random()*ANGLES.length)] : angle;
 
-async function generateWithAI(prompt){
+  // ===============================
+  // 🔒 PARAMÈTRES VERROUILLÉS
+  // ===============================
 
-const response = await fetch(
-"https://router.huggingface.co/hf-inference/models/distilgpt2",
-{
-method:"POST",
-headers:{
-"Authorization":"Bearer "+HF_TOKEN,
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-inputs:prompt,
-parameters:{
-max_new_tokens:250,
-temperature:0.9
-}
-})
-}
-);
-
-const data = await response.json();
-
-if(data.error){
-return "🔥 ERROR: "+data.error;
-}
-
-return data[0].generated_text;
-}
-
-/* =============================
-   GENERATE PROMPT
-============================= */
-
-async function generate(){
-
-let genre=document.getElementById("genre").value;
-let age=document.getElementById("age").value;
-let haut=document.getElementById("haut").value;
-let bas=document.getElementById("bas").value;
-let fond=document.getElementById("fond").value;
-let angle=document.getElementById("angle").value;
-
-let basePrompt=`
-Create a professional fashion prompt.
-
-${age} years old ${genre}
-
-Top: ${haut}
-Bottom: ${bas}
-Environment: ${fond}
-Angle: ${angle}
-
-Rules:
-- 800x1000px
-- Centered composition
-- Cinematic lighting
-- Real skin texture
-- Sunglasses from attached image
-- Sunglasses must be main focus
-- Never describe sunglasses as outfit
-- Professional photo
+  const lockedRules = `
+Always centered.
+Resolution 800x1000px.
+Cinematic lighting.
+Real skin texture.
+Shallow depth of field.
+50mm lens.
+Sunglasses from attached image must be placed on face.
+Sunglasses are main focus.
+Never describe sunglasses as outfit.
+Output ONLY in English.
+Professional photography.
 `;
 
-let result=await generateWithAI(basePrompt);
+  const basePrompt = `
+Age: ${age}
+Gender: ${genre}
 
-document.getElementById("output").value=result;
-}
+Top: ${selectedHaut}
+Bottom: ${selectedBas}
+Environment: ${selectedFond}
+Camera Angle: ${selectedAngle}
 
-/* =============================
-   COPY
-============================= */
+${lockedRules}
+`;
 
-function copyText(){
-let text=document.getElementById("output");
-text.select();
-document.execCommand("copy");
-alert("Copied ✅");
-}
+  const aiPrompt = await generateAI(basePrompt);
 
-</script>
+  res.json({
+    prompt: aiPrompt
+  });
 
-</body>
-</html>
+});
+
+// =====================================================
+// 🚀 LANCEMENT
+// =====================================================
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("🚀 SERVER RUNNING ON PORT", PORT);
+});

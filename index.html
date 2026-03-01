@@ -2,20 +2,20 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Banana v2</title>
+<title>Banana AI V3</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
 
 /* ============================= */
-/* 🌿 THEME GLOBAL */
+/* 🌿 THEME */
 /* ============================= */
 
 body{
 margin:0;
-font-family: Arial, sans-serif;
-background: #0b3d02;
+font-family:Arial, sans-serif;
+background:#0b3d02;
 color:black;
 background-image:url("https://i.postimg.cc/FHC5G1FX/nano-banana-logo.png");
 background-size:cover;
@@ -23,12 +23,10 @@ background-attachment:fixed;
 text-align:center;
 }
 
-/* TITRE */
-
 h1{
 color:red;
-font-size:32px;
-text-align:center;
+font-size:36px;
+font-weight:bold;
 }
 
 /* ============================= */
@@ -44,17 +42,21 @@ border-radius:10px;
 cursor:pointer;
 margin:5px;
 font-weight:bold;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.1);
+box-shadow:0px 0px 20px red;
 }
 
 button.copy{
 background:green;
 }
 
-button:hover{
-opacity:0.8;
-}
-
-/* DROPDOWN */
+/* ============================= */
+/* SELECT */
+/* ============================= */
 
 select{
 background:#d4a017;
@@ -65,7 +67,7 @@ font-weight:bold;
 }
 
 /* ============================= */
-/* CONTAINER */
+/* LAYOUT */
 /* ============================= */
 
 .container{
@@ -76,8 +78,6 @@ gap:20px;
 padding:20px;
 }
 
-/* 3D */
-
 #scene3D{
 width:80%;
 height:400px;
@@ -86,20 +86,25 @@ border-radius:15px;
 background:black;
 }
 
-</style>
+.face-icon{
+width:40px;
+vertical-align:middle;
+}
 
+</style>
 </head>
 <body>
 
-<h1>🔥 Nano Banana Prompt Generator</h1>
+<h1>🔥 BANANA PROMPT GENERATOR</h1>
 
 <div class="container">
 
-<!-- ============================= -->
+<!-- ========================== -->
 <!-- PARAMETRES -->
-<!-- ============================= -->
+<!-- ========================== -->
 
 <div>
+
 <label>Genre :</label>
 <select id="genre">
 <option>Homme</option>
@@ -107,52 +112,41 @@ background:black;
 </select>
 
 <label>Age :</label>
-<select id="age">
-<script>
-for(let i=18;i<=60;i++){
-document.write(`<option>${i}</option>`);
-}
-</script>
-</select>
+<select id="age"></select>
+
 </div>
 
+<!-- ========================== -->
 <!-- VETEMENTS -->
+<!-- ========================== -->
 
 <h2>👕 Vêtements</h2>
 
 <select id="haut"></select>
 <select id="bas"></select>
 
-<button onclick="toggleRobe()">Robe / Jupe</button>
-
 <h2>🌿 Fond</h2>
 <select id="fond"></select>
 
-<h2>🎥 Angle</h2>
-<select id="angle" onchange="setAngle(this.value)">
-<option value="face">Face</option>
-<option value="profile">Profil</option>
-<option value="threeQuarter">3/4</option>
-<option value="back">Dos</option>
-</select>
+<h2>🎥 Cadre</h2>
 
-<!-- ============================= -->
-<!-- GENERATION -->
-<!-- ============================= -->
+<select id="angle"></select>
 
-<button onclick="generate()" class="generate">
-🚀 Générer
-</button>
+<img class="face-icon"
+src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
 
-<button onclick="copyText()" class="copy">
-📋 Copier
-</button>
+<!-- ========================== -->
+<!-- ACTIONS -->
+<!-- ========================== -->
+
+<button onclick="generate()">🚀 Générer</button>
+<button class="copy" onclick="copyText()">📋 Copier</button>
 
 <textarea id="output" rows="8" style="width:80%;"></textarea>
 
-<!-- ============================= -->
-<!-- 3D SCENE -->
-<!-- ============================= -->
+<!-- ========================== -->
+<!-- 3D -->
+<!-- ========================== -->
 
 <h2>🧊 Visualisation 3D</h2>
 
@@ -161,88 +155,120 @@ document.write(`<option>${i}</option>`);
 <button onclick="zoomIn()">Zoom +</button>
 <button onclick="zoomOut()">Zoom -</button>
 
-<input type="range" min="2" max="15" step="0.1" value="5"
-oninput="setZoom(this.value)">
-
 </div>
-
-<!-- ============================= -->
-<!-- SCRIPT 3D + LOGIQUE -->
-<!-- ============================= -->
 
 <script>
 
 /* ============================= */
-/* LISTES */
+/* LISTES ULTRA COMPLETE */
 /* ============================= */
 
+/* HAUT */
+
 let hauts = [
-"T-shirt","Chemise","Blazer","Top dentelle","Veste cuir","Débardeur","Hoodie"
+"T-shirt","T-shirt coupe slim","T-shirt oversize",
+"Chemise manches longues","Chemise manches courtes",
+"Blazer","Hoodie","Top dentelle","Top bandeau",
+"Top épaules dénudées","Veste cuir","Débardeur",
+"Top sport","Chemise lin","Bustier","Top romantique"
 ];
 
+/* BAS */
+
 let bas = [
-"Jean","Pantalon","Short","Jupe","Legging","Chino"
+"Jean","Jean slim","Jean regular",
+"Pantalon","Pantalon droit","Pantalon tailleur",
+"Chino","Short","Short jean",
+"Legging","Jupe","Mini jupe","Jupe longue"
 ];
+
+/* FONDS */
 
 let fonds = [
 "Rooftop skyline",
-"Hôtel luxe",
+"Hôtel 5 étoiles",
+"Terrasse piscine",
 "Plage privée",
-"Villa piscine",
-"Rue urbaine nuit"
+"Villa moderne",
+"Jardin élégant",
+"Lac forêt",
+"Galerie art",
+"Rue urbaine nuit",
+"Studio photo",
+"Restaurant luxe"
 ];
 
-/* Inject options */
+/* ANGLES */
 
-function fillSelect(id,list){
-let select = document.getElementById(id);
+let angles = [
+"Vue hauteur yeux",
+"Contre-plongée glamour",
+"Angle frontal",
+"Angle 3/4 gauche",
+"Angle 3/4 droit",
+"Profil gauche",
+"Profil droit",
+"Face caméra"
+];
+
+/* ============================= */
+/* INJECT OPTIONS */
+/* ============================= */
+
+function fill(id,list){
+let select=document.getElementById(id);
 list.forEach(item=>{
-let opt = document.createElement("option");
-opt.textContent = item;
+let opt=document.createElement("option");
+opt.textContent=item;
 select.appendChild(opt);
 });
 }
 
-fillSelect("haut",hauts);
-fillSelect("bas",bas);
-fillSelect("fond",fonds);
+fill("haut",hauts);
+fill("bas",bas);
+fill("fond",fonds);
+fill("angle",angles);
+
+/* Age */
+
+let ageSelect=document.getElementById("age");
+for(let i=18;i<=60;i++){
+let opt=document.createElement("option");
+opt.textContent=i;
+ageSelect.appendChild(opt);
+}
 
 /* ============================= */
-/* GENERATION PROMPT */
+/* PROMPT RULES VERROUILLEES */
+/* ============================= */
+
+const LOCKED_RULES = `
+MUST:
+- Always 800x1000px
+- Always centered
+- Sunglasses from attached image MUST be on face
+- Sunglasses are main focus
+- Never describe sunglasses as outfit
+- Cinematic lighting
+- Real skin texture
+- English language only
+`;
+
+/* ============================= */
+/* GENERATE PROMPT */
 /* ============================= */
 
 function generate(){
 
-let genre = document.getElementById("genre").value;
-let age = document.getElementById("age").value;
-let haut = document.getElementById("haut").value;
-let bas = document.getElementById("bas").value;
-let fond = document.getElementById("fond").value;
-let angle = document.getElementById("angle").value;
-
 let prompt = `
-${age} year old ${genre}.
+${ageSelect.value} year old ${genre.value}
 
-Outfit:
-Top: ${haut}
-Bottom: ${bas}
+Top: ${haut.value}
+Bottom: ${bas.value}
+Environment: ${fond.value}
+Camera: ${angle.value}
 
-Environment: ${fond}
-
-Camera Angle: ${angle}
-
-Rules:
-- Perfectly centered
-- 800x1000px
-- 50mm lens
-- Cinematic lighting
-- Real skin texture
-- Sunglasses from attached image
-- Sunglasses are main focal point
-- Never describe sunglasses as outfit
-- Professional photo
-- Background blur
-- High realism
+${LOCKED_RULES}
 `;
 
 document.getElementById("output").value = prompt;
@@ -253,96 +279,86 @@ document.getElementById("output").value = prompt;
 /* ============================= */
 
 function copyText(){
-let text = document.getElementById("output");
-text.select();
-document.execCommand("copy");
+navigator.clipboard.writeText(
+document.getElementById("output").value
+);
+alert("Copied!");
 }
 
 /* ============================= */
-/* ROBE BUTTON */
-/* ============================= */
-
-function toggleRobe(){
-alert("Mode robe / jupe activé (adapter prompt si femme)");
-}
-
-/* ============================= */
-/* THREE JS 3D */
+/* 3D SCENE */
 /* ============================= */
 
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75,1,0.1,1000);
 let renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(document.getElementById("scene3D").clientWidth,400);
+renderer.setSize(
+document.getElementById("scene3D").clientWidth,
+400
+);
 document.getElementById("scene3D").appendChild(renderer.domElement);
 
-let light = new THREE.DirectionalLight(0xffffff,1);
+let light=new THREE.DirectionalLight(0xffffff,1);
 light.position.set(5,5,5);
 scene.add(light);
 
-let geometry = new THREE.BoxGeometry(1,2,1);
-let material = new THREE.MeshStandardMaterial({color:0x00ff88});
-let avatar = new THREE.Mesh(geometry,material);
+/* Avatar */
+
+let geometry=new THREE.BoxGeometry(1,2,1);
+let material=new THREE.MeshStandardMaterial({color:0x00ff88});
+let avatar=new THREE.Mesh(geometry,material);
 scene.add(avatar);
 
-camera.position.z = 5;
+camera.position.z=5;
 
-/* ============================= */
-/* ROTATION */
-/* ============================= */
+/* Rotation Animation */
 
-let isDragging=false;
-renderer.domElement.addEventListener("mousedown",()=>isDragging=true);
-renderer.domElement.addEventListener("mouseup",()=>isDragging=false);
-renderer.domElement.addEventListener("mousemove",(e)=>{
-if(isDragging){
-avatar.rotation.y += e.movementX * 0.01;
+let targetRotation=0;
+
+function setAngleRotation(val){
+if(val.includes("Face")) targetRotation=0;
+if(val.includes("Profil")) targetRotation=Math.PI/2;
+if(val.includes("3/4")) targetRotation=Math.PI/4;
+if(val.includes("Dos")) targetRotation=Math.PI;
 }
+
+document.getElementById("angle")
+.addEventListener("change",function(){
+setAngleRotation(this.value);
 });
 
-/* ============================= */
-/* ANGLE SELECT */
-/* ============================= */
-
-function setAngle(val){
-if(val==="face") avatar.rotation.y=0;
-if(val==="profile") avatar.rotation.y=Math.PI/2;
-if(val==="threeQuarter") avatar.rotation.y=Math.PI/4;
-if(val==="back") avatar.rotation.y=Math.PI;
-}
-
-/* ============================= */
-/* ZOOM */
-/* ============================= */
-
-let minZoom=2;
-let maxZoom=15;
-
-function zoomIn(){
-camera.position.z -=0.5;
-if(camera.position.z<minZoom) camera.position.z=minZoom;
-}
-
-function zoomOut(){
-camera.position.z +=0.5;
-if(camera.position.z>maxZoom) camera.position.z=maxZoom;
-}
-
-function setZoom(val){
-camera.position.z = parseFloat(val);
-}
-
-renderer.domElement.addEventListener("wheel",(e)=>{
-camera.position.z += e.deltaY*0.01;
-});
-
-/* ANIMATION */
+/* Smooth Animation */
 
 function animate(){
 requestAnimationFrame(animate);
+avatar.rotation.y += (targetRotation-avatar.rotation.y)*0.1;
 renderer.render(scene,camera);
 }
+
 animate();
+
+/* Zoom */
+
+function zoomIn(){
+camera.position.z-=0.5;
+}
+
+function zoomOut(){
+camera.position.z+=0.5;
+}
+
+/* Mouse Rotation */
+
+let dragging=false;
+
+renderer.domElement.onmousedown=()=>dragging=true;
+renderer.domElement.onmouseup=()=>dragging=false;
+
+renderer.domElement.onmousemove=(e)=>{
+if(dragging){
+avatar.rotation.y+=e.movementX*0.01;
+}
+};
 
 </script>
 

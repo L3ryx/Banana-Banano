@@ -1,159 +1,284 @@
-// =====================================================
-// 🍌 BANANA GENERATOR V3 - IA EMBARQUÉE HUGGINGFACE
-// =====================================================
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>🍌 Banana AI Generator</title>
 
-require("dotenv").config();
-const express = require("express");
-const fetch = require("node-fetch");
-const path = require("path");
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-const app = express();
-app.use(express.json());
-app.use(express.static("public"));
+<style>
 
-// =====================================================
-// 🔐 TOKEN ENV RENDER
-// Nom de ta clé : Banana
-// =====================================================
+/* ============================= */
+/* 🌿 GLOBAL STYLE */
+/* ============================= */
 
-const HF_TOKEN = process.env.Banana;
-
-if (!HF_TOKEN) {
-  console.log("❌ TOKEN Banana NON DETECTÉ");
-} else {
-  console.log("✅ TOKEN Banana DETECTÉ");
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#0b3d02;
+color:white;
+text-align:center;
+overflow-x:hidden;
 }
 
-// =====================================================
-// 🤖 MODELE HUGGINGFACE
-// =====================================================
+/* ============================= */
+/* ✨ TITLE */
+/* ============================= */
 
-const HF_API = "https://router.huggingface.co/hf-inference/models/distilgpt2";
-
-async function generateAI(prompt) {
-  const response = await fetch(HF_API, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${HF_TOKEN}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      inputs: prompt,
-      parameters: {
-        max_new_tokens: 300,
-        temperature: 1.2,
-        top_p: 0.95,
-        do_sample: true
-      }
-    })
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    return "🔥 ERREUR IA : " + JSON.stringify(data);
-  }
-
-  return data[0]?.generated_text || "No output";
+h1{
+font-size:50px;
+font-weight:bold;
+color:white;
+text-shadow:0 0 20px #00ff88;
+margin-top:40px;
 }
 
-// =====================================================
-// 🎛 LISTES OPTIMISÉES
-// =====================================================
+/* ============================= */
+/* 🎛 CONTROLS */
+/* ============================= */
 
-const HAUTS = [
+.container{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:20px;
+margin-top:40px;
+}
+
+/* LABEL */
+
+label{
+font-size:18px;
+font-weight:bold;
+}
+
+/* INPUTS */
+
+select, input{
+background:#d4a017;
+color:black;
+padding:15px;
+border-radius:15px;
+border:none;
+font-size:18px;
+font-weight:bold;
+min-width:300px;
+text-align:center;
+box-shadow:0 0 15px rgba(0,0,0,0.4);
+}
+
+/* BUTTON */
+
+button{
+background:red;
+color:white;
+padding:20px 40px;
+font-size:22px;
+border:none;
+border-radius:20px;
+cursor:pointer;
+font-weight:bold;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.1);
+box-shadow:0 0 30px red;
+}
+
+/* COPY BUTTON */
+
+.copy{
+background:green;
+}
+
+/* TEXTAREA */
+
+textarea{
+width:80%;
+height:250px;
+padding:20px;
+border-radius:20px;
+font-size:16px;
+background:#111;
+color:#00ff88;
+border:2px solid #00ff88;
+}
+
+/* ============================= */
+/* 🍌 BANANA FLOATING BACKGROUND */
+/* ============================= */
+
+.banana{
+position:fixed;
+font-size:40px;
+animation:float 10s linear infinite;
+opacity:0.6;
+pointer-events:none;
+}
+
+@keyframes float{
+0%{ transform:translateY(0px) rotate(0deg); }
+50%{ transform:translateY(50px) rotate(180deg); }
+100%{ transform:translateY(0px) rotate(360deg); }
+}
+
+</style>
+
+</head>
+<body>
+
+<h1>🍌 BANANA AI GENERATOR</h1>
+
+<div class="container">
+
+<label>Genre</label>
+<select id="genre">
+<option>Man</option>
+<option>Woman</option>
+</select>
+
+<label>Age</label>
+<input type="number" id="age" min="18" max="60" value="25">
+
+<label>Auto Mode</label>
+<select id="autoMode">
+<option value="true">ON</option>
+<option value="false">OFF</option>
+</select>
+
+<label>Haut</label>
+<select id="haut"></select>
+
+<label>Bas</label>
+<select id="bas"></select>
+
+<label>Fond</label>
+<select id="fond"></select>
+
+<label>Angle</label>
+<select id="angle"></select>
+
+<button onclick="generate()">🚀 GENERER</button>
+
+<button class="copy" onclick="copyText()">📋 COPY</button>
+
+<textarea id="result"></textarea>
+
+</div>
+
+<!-- 🍌 BANANES FLOTTANTES -->
+
+<script>
+
+for(let i=0;i<20;i++){
+let banana=document.createElement("div");
+banana.innerHTML="🍌";
+banana.className="banana";
+banana.style.left=Math.random()*100+"vw";
+banana.style.top=Math.random()*100+"vh";
+banana.style.animationDuration=(5+Math.random()*10)+"s";
+document.body.appendChild(banana);
+}
+
+</script>
+
+<!-- ============================= -->
+<!-- LISTES -->
+<!-- ============================= -->
+
+<script>
+
+const hauts = [
 "T-shirt oversize","T-shirt slim","Chemise luxe","Blazer","Top dentelle",
-"Hoodie","Veste cuir","Crop top","Top sport","Débardeur","Chemise lin",
-"Pull laine","Haut minimaliste","Haut streetwear","Haut fashion"
+"Hoodie","Veste cuir","Crop top","Top sport","Débardeur",
+"Pull","Chemise lin","Top minimaliste","Haut streetwear","Haut fashion"
 ];
 
-const BAS = [
+const bas = [
 "Jean slim","Jean regular","Cargo","Pantalon tailleur","Short",
-"Jupe","Legging","Chino","Pantalon large","Short en jean",
-"Pantalon cuir","Pantalon sport","Pantalon droit"
+"Jupe","Legging","Chino","Pantalon large","Short jean",
+"Pantalon cuir","Jogging","Pantalon droit","Mini jupe"
 ];
 
-const FONDS = [
-"Rooftop skyline","Plage privée","Villa luxe","Hôtel 5 étoiles",
-"Studio photo pro","Rue urbaine nuit","Forêt lumineuse",
-"Galerie art","Piscine infinity","Intérieur minimaliste",
-"Restaurant chic","Terrasse soleil","Appartement design"
+const fonds = [
+"Rooftop skyline",
+"Plage privée",
+"Villa luxe",
+"Hôtel 5 étoiles",
+"Studio photo",
+"Rue urbaine nuit",
+"Forêt lumineuse",
+"Galerie art",
+"Piscine infinity",
+"Appartement design",
+"Restaurant chic",
+"Terrasse soleil"
 ];
 
-const ANGLES = [
-"Face","3/4 gauche","3/4 droite","Profil gauche",
-"Profil droit","Légère contre-plongée","Vue hauteur yeux"
+const angles = [
+"Face",
+"3/4 gauche",
+"3/4 droite",
+"Profil gauche",
+"Profil droit",
+"Contre plongée",
+"Vue hauteur yeux"
 ];
 
-// =====================================================
-// 🔥 GENERATE PROMPT
-// =====================================================
+function fill(id,list){
+let select=document.getElementById(id);
+list.forEach(item=>{
+let opt=document.createElement("option");
+opt.textContent=item;
+select.appendChild(opt);
+});
+}
 
-app.post("/generate", async (req, res) => {
+fill("haut",hauts);
+fill("bas",bas);
+fill("fond",fonds);
+fill("angle",angles);
 
-  const {
-    genre,
-    age,
-    autoMode,
-    haut,
-    bas,
-    fond,
-    angle
-  } = req.body;
+</script>
 
-  // ===============================
-  // 🎲 MODE ALÉATOIRE IA
-  // ===============================
+<!-- ============================= -->
+<!-- GENERATION -->
+<!-- ============================= -->
 
-  const selectedHaut = autoMode ? HAUTS[Math.floor(Math.random()*HAUTS.length)] : haut;
-  const selectedBas = autoMode ? BAS[Math.floor(Math.random()*BAS.length)] : bas;
-  const selectedFond = autoMode ? FONDS[Math.floor(Math.random()*FONDS.length)] : fond;
-  const selectedAngle = autoMode ? ANGLES[Math.floor(Math.random()*ANGLES.length)] : angle;
+<script>
 
-  // ===============================
-  // 🔒 PARAMÈTRES VERROUILLÉS
-  // ===============================
+async function generate(){
 
-  const lockedRules = `
-Always centered.
-Resolution 800x1000px.
-Cinematic lighting.
-Real skin texture.
-Shallow depth of field.
-50mm lens.
-Sunglasses from attached image must be placed on face.
-Sunglasses are main focus.
-Never describe sunglasses as outfit.
-Output ONLY in English.
-Professional photography.
-`;
+const data={
+genre:document.getElementById("genre").value,
+age:document.getElementById("age").value,
+autoMode:document.getElementById("autoMode").value==="true",
+haut:document.getElementById("haut").value,
+bas:document.getElementById("bas").value,
+fond:document.getElementById("fond").value,
+angle:document.getElementById("angle").value
+};
 
-  const basePrompt = `
-Age: ${age}
-Gender: ${genre}
-
-Top: ${selectedHaut}
-Bottom: ${selectedBas}
-Environment: ${selectedFond}
-Camera Angle: ${selectedAngle}
-
-${lockedRules}
-`;
-
-  const aiPrompt = await generateAI(basePrompt);
-
-  res.json({
-    prompt: aiPrompt
-  });
-
+const res=await fetch("/generate",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
 });
 
-// =====================================================
-// 🚀 LANCEMENT
-// =====================================================
+const json=await res.json();
 
-const PORT = process.env.PORT || 3000;
+document.getElementById("result").value=json.prompt;
+}
 
-app.listen(PORT, () => {
-  console.log("🚀 SERVER RUNNING ON PORT", PORT);
-});
+function copyText(){
+let text=document.getElementById("result");
+text.select();
+document.execCommand("copy");
+alert("Copied 🍌");
+}
+
+</script>
+
+</body>
+</html>

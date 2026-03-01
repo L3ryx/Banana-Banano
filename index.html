@@ -1,151 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>🍌 Banana AI Generator</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
+<title>🍌 Banana Generator V3</title>
 
-/* ============================= */
-/* 🌿 GLOBAL STYLE */
-/* ============================= */
-
-body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#0b3d02;
-color:white;
-text-align:center;
-overflow-x:hidden;
-}
-
-/* ============================= */
-/* ✨ TITLE */
-/* ============================= */
-
-h1{
-font-size:50px;
-font-weight:bold;
-color:white;
-text-shadow:0 0 20px #00ff88;
-margin-top:40px;
-}
-
-/* ============================= */
-/* 🎛 CONTROLS */
-/* ============================= */
-
-.container{
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:20px;
-margin-top:40px;
-}
-
-/* LABEL */
-
-label{
-font-size:18px;
-font-weight:bold;
-}
-
-/* INPUTS */
-
-select, input{
-background:#d4a017;
-color:black;
-padding:15px;
-border-radius:15px;
-border:none;
-font-size:18px;
-font-weight:bold;
-min-width:300px;
-text-align:center;
-box-shadow:0 0 15px rgba(0,0,0,0.4);
-}
-
-/* BUTTON */
-
-button{
-background:red;
-color:white;
-padding:20px 40px;
-font-size:22px;
-border:none;
-border-radius:20px;
-cursor:pointer;
-font-weight:bold;
-transition:0.3s;
-}
-
-button:hover{
-transform:scale(1.1);
-box-shadow:0 0 30px red;
-}
-
-/* COPY BUTTON */
-
-.copy{
-background:green;
-}
-
-/* TEXTAREA */
-
-textarea{
-width:80%;
-height:250px;
-padding:20px;
-border-radius:20px;
-font-size:16px;
-background:#111;
-color:#00ff88;
-border:2px solid #00ff88;
-}
-
-/* ============================= */
-/* 🍌 BANANA FLOATING BACKGROUND */
-/* ============================= */
-
-.banana{
-position:fixed;
-font-size:40px;
-animation:float 10s linear infinite;
-opacity:0.6;
-pointer-events:none;
-}
-
-@keyframes float{
-0%{ transform:translateY(0px) rotate(0deg); }
-50%{ transform:translateY(50px) rotate(180deg); }
-100%{ transform:translateY(0px) rotate(360deg); }
-}
-
-</style>
+<!-- Lien CSS -->
+<link rel="stylesheet" href="style.css">
 
 </head>
 <body>
 
-<h1>🍌 BANANA AI GENERATOR</h1>
+<h1>🍌 BANANA GENERATOR V3</h1>
 
 <div class="container">
 
+<!-- ============================= -->
+<!-- PARAMETRES -->
+<!-- ============================= -->
+
 <label>Genre</label>
 <select id="genre">
-<option>Man</option>
-<option>Woman</option>
+<option>Homme</option>
+<option>Femme</option>
 </select>
 
 <label>Age</label>
-<input type="number" id="age" min="18" max="60" value="25">
+<select id="age"></select>
 
-<label>Auto Mode</label>
-<select id="autoMode">
-<option value="true">ON</option>
-<option value="false">OFF</option>
-</select>
+<label>Mode Aléatoire IA</label>
+<input type="checkbox" id="autoMode">
+
+<hr>
 
 <label>Haut</label>
 <select id="haut"></select>
@@ -159,46 +46,36 @@ pointer-events:none;
 <label>Angle</label>
 <select id="angle"></select>
 
-<button onclick="generate()">🚀 GENERER</button>
+<hr>
 
-<button class="copy" onclick="copyText()">📋 COPY</button>
+<button onclick="generate()">🚀 Générer</button>
+<button class="copy" onclick="copyText()">📋 Copier</button>
 
-<textarea id="result"></textarea>
+<textarea id="output" rows="10"></textarea>
 
 </div>
 
-<!-- 🍌 BANANES FLOTTANTES -->
-
-<script>
-
-for(let i=0;i<20;i++){
-let banana=document.createElement("div");
-banana.innerHTML="🍌";
-banana.className="banana";
-banana.style.left=Math.random()*100+"vw";
-banana.style.top=Math.random()*100+"vh";
-banana.style.animationDuration=(5+Math.random()*10)+"s";
-document.body.appendChild(banana);
-}
-
-</script>
-
 <!-- ============================= -->
-<!-- LISTES -->
+<!-- JAVASCRIPT -->
 <!-- ============================= -->
 
 <script>
+
+/* ========================= */
+/* LISTES */
+/* ========================= */
 
 const hauts = [
-"T-shirt oversize","T-shirt slim","Chemise luxe","Blazer","Top dentelle",
-"Hoodie","Veste cuir","Crop top","Top sport","Débardeur",
-"Pull","Chemise lin","Top minimaliste","Haut streetwear","Haut fashion"
+"T-shirt oversize","T-shirt slim","Chemise luxe","Blazer",
+"Top dentelle","Hoodie","Veste cuir","Crop top",
+"Top sport","Débardeur","Chemise lin",
+"Pull","Haut streetwear","Haut minimaliste"
 ];
 
 const bas = [
-"Jean slim","Jean regular","Cargo","Pantalon tailleur","Short",
-"Jupe","Legging","Chino","Pantalon large","Short jean",
-"Pantalon cuir","Jogging","Pantalon droit","Mini jupe"
+"Jean slim","Jean regular","Cargo","Pantalon tailleur",
+"Short","Jupe","Legging","Chino","Pantalon large",
+"Pantalon cuir","Short en jean"
 ];
 
 const fonds = [
@@ -206,14 +83,12 @@ const fonds = [
 "Plage privée",
 "Villa luxe",
 "Hôtel 5 étoiles",
-"Studio photo",
+"Studio photo pro",
 "Rue urbaine nuit",
 "Forêt lumineuse",
-"Galerie art",
+"Galerie d’art",
 "Piscine infinity",
-"Appartement design",
-"Restaurant chic",
-"Terrasse soleil"
+"Intérieur minimaliste"
 ];
 
 const angles = [
@@ -226,56 +101,70 @@ const angles = [
 "Vue hauteur yeux"
 ];
 
+/* ========================= */
+/* FILL SELECT */
+/* ========================= */
+
 function fill(id,list){
-let select=document.getElementById(id);
+let select = document.getElementById(id);
 list.forEach(item=>{
-let opt=document.createElement("option");
-opt.textContent=item;
+let opt = document.createElement("option");
+opt.textContent = item;
 select.appendChild(opt);
 });
 }
 
+/* Age */
+let ageSelect = document.getElementById("age");
+for(let i=18;i<=60;i++){
+let opt = document.createElement("option");
+opt.textContent = i;
+ageSelect.appendChild(opt);
+}
+
+/* Remplissage */
 fill("haut",hauts);
 fill("bas",bas);
 fill("fond",fonds);
 fill("angle",angles);
 
-</script>
-
-<!-- ============================= -->
-<!-- GENERATION -->
-<!-- ============================= -->
-
-<script>
+/* ========================= */
+/* GENERATE */
+/* ========================= */
 
 async function generate(){
 
-const data={
-genre:document.getElementById("genre").value,
-age:document.getElementById("age").value,
-autoMode:document.getElementById("autoMode").value==="true",
-haut:document.getElementById("haut").value,
-bas:document.getElementById("bas").value,
-fond:document.getElementById("fond").value,
-angle:document.getElementById("angle").value
+let data = {
+genre: document.getElementById("genre").value,
+age: document.getElementById("age").value,
+autoMode: document.getElementById("autoMode").checked,
+haut: document.getElementById("haut").value,
+bas: document.getElementById("bas").value,
+fond: document.getElementById("fond").value,
+angle: document.getElementById("angle").value
 };
 
-const res=await fetch("/generate",{
+let res = await fetch("/generate",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify(data)
 });
 
-const json=await res.json();
+let json = await res.json();
 
-document.getElementById("result").value=json.prompt;
+document.getElementById("output").value = json.prompt;
+
 }
 
+/* ========================= */
+/* COPY */
+/* ========================= */
+
 function copyText(){
-let text=document.getElementById("result");
-text.select();
+let txt = document.getElementById("output");
+txt.select();
 document.execCommand("copy");
-alert("Copied 🍌");
+alert("Copié !");
 }
 
 </script>

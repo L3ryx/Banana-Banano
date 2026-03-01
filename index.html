@@ -7,222 +7,238 @@
 
 <style>
 
-/* ============================= */
-/* 🌿 GLOBAL THEME */
-/* ============================= */
+/* ===================================================== */
+/* 🌿 THEME GLOBAL */
+/* ===================================================== */
 
-html, body{
+body{
 margin:0;
-padding:0;
-height:auto;
-overflow-y:auto;
-scroll-behavior:smooth;
 font-family:Arial, sans-serif;
-background:#0b5d1e;
+background:#0b3d02;
 color:black;
+overflow-x:hidden;
+overflow-y:auto;
+background-image:url("https://i.postimg.cc/FHC5G1FX/nano-banana-logo.png");
+background-size:cover;
+background-attachment:fixed;
 }
 
-/* ============================= */
-/* 🌟 TITRE */
-/* ============================= */
+/* ===================================================== */
+/* 🎯 TITRE */
+/* ===================================================== */
 
 h1{
-text-align:center;
-font-size:45px;
-color:#ff0000;
-text-shadow:0 0 20px #ff0000, 0 0 40px #ff3333;
+color:white;
 font-weight:bold;
-border:3px solid rgba(255,0,0,0.4);
-padding:15px;
-border-radius:20px;
-backdrop-filter:blur(10px);
-}
-
-/* ============================= */
-/* 🌻 BANANES FLOTTANTES */
-/* ============================= */
-
-.banana{
-position:fixed;
 font-size:40px;
-animation:float 15s linear infinite;
-opacity:0.8;
-pointer-events:none;
+text-align:center;
+text-shadow:0 0 20px lime;
+animation:pulseGlow 2s infinite;
 }
 
-@keyframes float{
-0%{transform:translateY(100vh) rotate(0deg);}
-100%{transform:translateY(-100vh) rotate(360deg);}
+/* ===================================================== */
+/* 🔥 ANIMATIONS */
+/* ===================================================== */
+
+@keyframes pulseGlow{
+0%{ text-shadow:0 0 10px lime;}
+50%{ text-shadow:0 0 40px lime;}
+100%{ text-shadow:0 0 10px lime;}
 }
 
-/* ============================= */
-/* BUTTONS */
-/* ============================= */
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(30px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+@keyframes vibrate{
+0%{transform:translateX(0);}
+25%{transform:translateX(2px);}
+50%{transform:translateX(-2px);}
+75%{transform:translateX(2px);}
+100%{transform:translateX(0);}
+}
+
+/* ===================================================== */
+/* 🟡 BUTTONS */
+/* ===================================================== */
 
 button{
 background:yellow;
 color:black;
-font-weight:bold;
-padding:12px 18px;
+padding:20px;
 border:none;
-border-radius:12px;
+border-radius:15px;
 cursor:pointer;
+font-size:18px;
+font-weight:bold;
 transition:0.3s;
-box-shadow:0 0 10px yellow;
+animation:fadeIn 0.8s ease;
 }
 
 button:hover{
+background:orange;
+animation:vibrate 0.2s linear;
 transform:scale(1.1);
-box-shadow:0 0 25px yellow;
 }
 
 button.generate{
 background:red;
 color:white;
-box-shadow:0 0 15px red;
 }
 
-/* ============================= */
-/* SELECTORS */
-/* ============================= */
+/* COPY BUTTON */
+
+button.copy{
+background:green;
+color:white;
+}
+
+/* ===================================================== */
+/* 🔽 SELECTORS */
+/* ===================================================== */
 
 select{
-background:#ffd000;
+background:#ffcc00;
 color:black;
-padding:12px;
+padding:15px;
+font-size:18px;
 border-radius:15px;
-font-weight:bold;
-font-size:16px;
-box-shadow:0 0 15px rgba(255,255,0,0.6);
+border:2px solid black;
+transition:0.3s;
 }
 
-/* ============================= */
-/* CONTAINER */
-/* ============================= */
+select:focus{
+transform:scale(1.05);
+box-shadow:0 0 30px yellow;
+}
+
+/* ===================================================== */
+/* 📦 CONTAINER */
+/* ===================================================== */
 
 .container{
 display:flex;
 flex-direction:column;
 align-items:center;
-gap:25px;
+gap:30px;
 padding:30px;
+animation:fadeIn 1s ease;
 }
 
-/* ============================= */
-/* 3D FRAME */
-/* ============================= */
+/* ===================================================== */
+/* 🌟 BANANES FLOTTANTES */
+/* ===================================================== */
 
-#scene3D{
-width:90%;
-height:400px;
-border:5px solid yellow;
-border-radius:25px;
-background:black;
-box-shadow:0 0 40px yellow;
+.banana{
+position:fixed;
+font-size:40px;
+animation:float 10s linear infinite;
+pointer-events:none;
 }
 
-/* ============================= */
+@keyframes float{
+0%{transform:translateY(0) translateX(0);}
+50%{transform:translateY(-300px) translateX(100px);}
+100%{transform:translateY(0) translateX(0);}
+}
+
+/* ===================================================== */
 /* TEXTAREA */
-/* ============================= */
+/* ===================================================== */
 
 textarea{
-width:90%;
+width:80%;
 height:200px;
-background:#0f3d12;
-color:white;
+background:black;
+color:lime;
 border-radius:15px;
 padding:15px;
-border:2px solid yellow;
+font-size:16px;
+border:2px solid lime;
 }
 
 </style>
 </head>
+
 <body>
 
 <h1>🍌 BANANA AI GENERATOR 🍌</h1>
 
 <div class="container">
 
-<!-- ================= PARAMETRES ================= -->
-
-<div>
-Genre :
+<label>Genre</label>
 <select id="genre">
 <option>Homme</option>
 <option>Femme</option>
 </select>
 
-Age :
+<label>Age</label>
 <select id="age"></select>
-</div>
 
-<h2>👕 Vêtements</h2>
-
+<label>Haut</label>
 <select id="haut"></select>
+
+<label>Bas</label>
 <select id="bas"></select>
 
-<h2>🌿 Fond</h2>
+<label>Fond</label>
 <select id="fond"></select>
 
-<h2>🎥 Angle</h2>
+<label>Angle</label>
 <select id="angle"></select>
 
-<button class="generate" onclick="generate()">🚀 Générer</button>
-<button onclick="copyText()">📋 Copier</button>
+<button class="generate" onclick="generate()">🚀 GENERER</button>
+<button class="copy" onclick="copyText()">📋 COPIER</button>
 
 <textarea id="output"></textarea>
 
-<h2>🧊 Vue 3D</h2>
-
-<div id="scene3D"></div>
-
-<button onclick="zoomIn()">Zoom +</button>
-<button onclick="zoomOut()">Zoom -</button>
-
 </div>
-
-<!-- ================= SCRIPT ================= -->
 
 <script>
 
-/* ================= AGE ================= */
+/* ===================================================== */
+/* LISTES AUGMENTEES */
+/* ===================================================== */
 
-let ageSelect=document.getElementById("age");
+let hauts = [
+"T-shirt","Chemise","Blazer","Top Dentelle","Top Sport","Top Luxe",
+"Hoodie","Pull","Veste Cuir","Débardeur","Crop Top","Bustier"
+];
+
+let bas = [
+"Jean","Pantalon","Short","Legging","Chino","Jupe","Mini Jupe",
+"Pantalon Slim","Cargo","Tailleur","Short Denim"
+];
+
+let fonds = [
+"Rooftop Skyline","Hôtel Luxe","Plage Privée","Villa Piscine",
+"Studio Photo","Rue Nuit","Forêt Lumineuse","Galerie Art",
+"Restaurant Chic","Appartement Moderne","Casino Luxe"
+];
+
+let angles = [
+"Face","Profil","3/4 Gauche","3/4 Droite",
+"Légère Contre-Plongée","Vue Hauteur Yeux"
+];
+
+/* ===================================================== */
+/* FILL SELECT */
+/* ===================================================== */
+
+function fill(id,list){
+let s=document.getElementById(id);
+list.forEach(item=>{
+let o=document.createElement("option");
+o.textContent=item;
+s.appendChild(o);
+});
+}
+
 for(let i=18;i<=60;i++){
 let opt=document.createElement("option");
 opt.textContent=i;
-ageSelect.appendChild(opt);
-}
-
-/* ================= LISTES PLUS GRANDES ================= */
-
-let hauts=[
-"T-shirt","Chemise","Blazer","Hoodie","Top Dentelle","Top Sport",
-"Veste Cuir","Débardeur","Top Chic","Pull Oversize","Sweat"
-];
-
-let bas=[
-"Jean","Jean Slim","Pantalon","Chino","Short","Jupe","Legging",
-"Pantalon Tailleur","Cargo","Mini Jupe","Short Denim"
-];
-
-let fonds=[
-"Rooftop","Plage","Villa Piscine","Studio Photo","Rue Nuit",
-"Hotel Luxe","Forêt","Galerie Art","Intérieur Minimaliste"
-];
-
-let angles=[
-"Face","Profil","3/4 Gauche","3/4 Droite",
-"Légère Contre Plongée","Vue Hauteur Yeux"
-];
-
-function fill(id,list){
-let select=document.getElementById(id);
-list.forEach(item=>{
-let opt=document.createElement("option");
-opt.textContent=item;
-select.appendChild(opt);
-});
+document.getElementById("age").appendChild(opt);
 }
 
 fill("haut",hauts);
@@ -230,100 +246,75 @@ fill("bas",bas);
 fill("fond",fonds);
 fill("angle",angles);
 
-/* ================= GENERATE PROMPT ================= */
+/* ===================================================== */
+/* GENERATE PROMPT (LOCKED RULES) */
+/* ===================================================== */
 
 function generate(){
 
-let text=
-`Prompt Optimized:
+let genre=document.getElementById("genre").value;
+let age=document.getElementById("age").value;
+let haut=document.getElementById("haut").value;
+let bas=document.getElementById("bas").value;
+let fond=document.getElementById("fond").value;
+let angle=document.getElementById("angle").value;
 
-Resolution: 800x1000px
-English only
+let prompt=`
+${age} year old ${genre}
 
-Gender: ${genre.value}
-Age: ${age.value}
-Top: ${haut.value}
-Bottom: ${bas.value}
-Environment: ${fond.value}
-Camera: ${angle.value}
+Outfit:
+Top: ${haut}
+Bottom: ${bas}
 
-Rules:
-- Perfectly centered
+Environment: ${fond}
+Camera Angle: ${angle}
+
+LOCKED RULES:
+- Always centered
+- Resolution 800x1000px
+- 50mm lens
 - Cinematic lighting
 - Real skin texture
-- 50mm lens
-- Depth of field
+- Background blur
 - Sunglasses from attached image
-- Sunglasses are main focus
+- Sunglasses are main focal point
 - Never describe sunglasses as outfit
 - Professional photo
+- English only
+- Ultra realistic
 `;
 
-document.getElementById("output").value=text;
+document.getElementById("output").value=prompt;
 }
 
-/* ================= COPY ================= */
+/* COPY */
 
 function copyText(){
-navigator.clipboard.writeText(output.value);
-alert("Copié !");
+navigator.clipboard.writeText(document.getElementById("output").value);
+alert("Copied ✅");
 }
 
-/* ================= BANANES FLOTTANTES ================= */
+/* ===================================================== */
+/* BANANES FLOTTANTES */
+/* ===================================================== */
+
+function createBanana(){
+let b=document.createElement("div");
+b.innerHTML="🍌";
+b.className="banana";
+b.style.left=Math.random()*100+"vw";
+b.style.top=Math.random()*100+"vh";
+b.style.animationDuration=(5+Math.random()*10)+"s";
+document.body.appendChild(b);
+}
 
 for(let i=0;i<25;i++){
-let banana=document.createElement("div");
-banana.className="banana";
-banana.innerHTML="🍌";
-banana.style.left=Math.random()*100+"vw";
-banana.style.animationDuration=(10+Math.random()*20)+"s";
-document.body.appendChild(banana);
+createBanana();
 }
 
-/* ================= 3D ================= */
-
-let scene=new THREE.Scene();
-let camera=new THREE.PerspectiveCamera(75,1,0.1,1000);
-let renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(800,400);
-document.getElementById("scene3D").appendChild(renderer.domElement);
-
-let light=new THREE.PointLight(0xffffff,2);
-light.position.set(5,5,5);
-scene.add(light);
-
-let geometry=new THREE.SphereGeometry(1.5,32,32);
-let material=new THREE.MeshStandardMaterial({color:0xffff00});
-let banana3D=new THREE.Mesh(geometry,material);
-scene.add(banana3D);
-
-camera.position.z=5;
-
-/* Rotation */
-
-let drag=false;
-renderer.domElement.onmousedown=()=>drag=true;
-renderer.domElement.onmouseup=()=>drag=false;
-renderer.domElement.onmousemove=(e)=>{
-if(drag){
-banana3D.rotation.y+=e.movementX*0.01;
-banana3D.rotation.x+=e.movementY*0.01;
-}
-};
-
-/* Zoom */
-
-function zoomIn(){camera.position.z-=0.5;}
-function zoomOut(){camera.position.z+=0.5;}
-
-/* Animation */
-
-function animate(){
-requestAnimationFrame(animate);
-banana3D.rotation.y+=0.01;
-renderer.render(scene,camera);
-}
-animate();
+setInterval(()=>{
+createBanana();
+},4000);
 
 </script>
 

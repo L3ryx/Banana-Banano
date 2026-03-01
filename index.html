@@ -3,242 +3,267 @@
 <head>
 <meta charset="UTF-8">
 <title>Banana AI Generator</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
 
-/* ===================================================== */
-/* 🌿 THEME GLOBAL */
-/* ===================================================== */
+/* =============================== */
+/* 🌿 FOND FEUILLAGE 3D */
+/* =============================== */
 
 body{
 margin:0;
 font-family:Arial, sans-serif;
-background:#0b3d02;
-color:black;
-overflow-x:hidden;
+
+background: linear-gradient(
+135deg,
+#0f3d0f,
+#145214,
+#1a6b1a
+);
+
+background-image:
+radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 2px, transparent 2px),
+radial-gradient(circle at 70% 60%, rgba(0,0,0,0.1) 3px, transparent 3px);
+
+background-size: cover;
+background-attachment: fixed;
+
 overflow-y:auto;
-background-image:url("https://i.postimg.cc/FHC5G1FX/nano-banana-logo.png");
-background-size:cover;
-background-attachment:fixed;
+color:black;
+text-align:center;
 }
 
-/* ===================================================== */
-/* 🎯 TITRE */
-/* ===================================================== */
+/* =============================== */
+/* 🌟 TITRE */
+/* =============================== */
 
 h1{
 color:white;
 font-weight:bold;
-font-size:40px;
-text-align:center;
+font-size:42px;
 text-shadow:0 0 20px lime;
-animation:pulseGlow 2s infinite;
+margin-top:20px;
 }
 
-/* ===================================================== */
-/* 🔥 ANIMATIONS */
-/* ===================================================== */
-
-@keyframes pulseGlow{
-0%{ text-shadow:0 0 10px lime;}
-50%{ text-shadow:0 0 40px lime;}
-100%{ text-shadow:0 0 10px lime;}
-}
-
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(30px);}
-to{opacity:1;transform:translateY(0);}
-}
-
-@keyframes vibrate{
-0%{transform:translateX(0);}
-25%{transform:translateX(2px);}
-50%{transform:translateX(-2px);}
-75%{transform:translateX(2px);}
-100%{transform:translateX(0);}
-}
-
-/* ===================================================== */
-/* 🟡 BUTTONS */
-/* ===================================================== */
+/* =============================== */
+/* 🟡 BOUTONS */
+/* =============================== */
 
 button{
 background:yellow;
 color:black;
-padding:20px;
+padding:18px 25px;
 border:none;
 border-radius:15px;
-cursor:pointer;
-font-size:18px;
 font-weight:bold;
+font-size:18px;
+cursor:pointer;
+margin:10px;
+box-shadow:0 0 20px rgba(255,255,0,0.7);
 transition:0.3s;
-animation:fadeIn 0.8s ease;
 }
 
 button:hover{
-background:orange;
-animation:vibrate 0.2s linear;
 transform:scale(1.1);
+box-shadow:0 0 40px yellow;
 }
 
-button.generate{
-background:red;
-color:white;
-}
-
-/* COPY BUTTON */
-
-button.copy{
-background:green;
-color:white;
-}
-
-/* ===================================================== */
-/* 🔽 SELECTORS */
-/* ===================================================== */
+/* =============================== */
+/* 🟡 SELECTEURS */
+/* =============================== */
 
 select{
-background:#ffcc00;
+background:#ffd000;
 color:black;
 padding:15px;
-font-size:18px;
 border-radius:15px;
-border:2px solid black;
-transition:0.3s;
+font-size:18px;
+font-weight:bold;
+min-width:250px;
+margin:10px;
+box-shadow:0 0 15px rgba(0,0,0,0.3);
 }
 
-select:focus{
-transform:scale(1.05);
-box-shadow:0 0 30px yellow;
-}
-
-/* ===================================================== */
-/* 📦 CONTAINER */
-/* ===================================================== */
+/* =============================== */
+/* CONTAINER */
+/* =============================== */
 
 .container{
 display:flex;
 flex-direction:column;
 align-items:center;
 gap:30px;
-padding:30px;
-animation:fadeIn 1s ease;
+padding-bottom:100px;
 }
 
-/* ===================================================== */
-/* 🌟 BANANES FLOTTANTES */
-/* ===================================================== */
-
-.banana{
-position:fixed;
-font-size:40px;
-animation:float 10s linear infinite;
-pointer-events:none;
-}
-
-@keyframes float{
-0%{transform:translateY(0) translateX(0);}
-50%{transform:translateY(-300px) translateX(100px);}
-100%{transform:translateY(0) translateX(0);}
-}
-
-/* ===================================================== */
-/* TEXTAREA */
-/* ===================================================== */
+/* =============================== */
+/* OUTPUT */
+/* =============================== */
 
 textarea{
 width:80%;
 height:200px;
-background:black;
-color:lime;
 border-radius:15px;
 padding:15px;
 font-size:16px;
-border:2px solid lime;
+background:#0a2a0a;
+color:white;
+border:2px solid yellow;
 }
 
 </style>
 </head>
-
 <body>
 
 <h1>🍌 BANANA AI GENERATOR 🍌</h1>
 
 <div class="container">
 
-<label>Genre</label>
+<!-- ============================ -->
+<!-- PARAMETRES -->
+<!-- ============================ -->
+
+<div>
 <select id="genre">
 <option>Homme</option>
 <option>Femme</option>
 </select>
 
-<label>Age</label>
-<select id="age"></select>
+<select id="age">
+<script>
+for(let i=18;i<=60;i++){
+document.write(`<option>${i}</option>`);
+}
+</script>
+</select>
+</div>
 
-<label>Haut</label>
+<!-- ============================ -->
+<!-- VETEMENTS -->
+<!-- ============================ -->
+
+<h2 style="color:white;">👕 Haut</h2>
 <select id="haut"></select>
 
-<label>Bas</label>
+<h2 style="color:white;">👖 Bas</h2>
 <select id="bas"></select>
 
-<label>Fond</label>
+<h2 style="color:white;">🌴 Fond</h2>
 <select id="fond"></select>
 
-<label>Angle</label>
+<h2 style="color:white;">🎥 Angle</h2>
 <select id="angle"></select>
 
-<button class="generate" onclick="generate()">🚀 GENERER</button>
-<button class="copy" onclick="copyText()">📋 COPIER</button>
+<!-- ============================ -->
+<!-- GENERATION -->
+<!-- ============================ -->
+
+<button onclick="generate()">🚀 GENERER</button>
+<button onclick="copyText()" style="background:green;color:white;">
+📋 COPIER
+</button>
 
 <textarea id="output"></textarea>
 
 </div>
 
+<!-- ============================ -->
+<!-- 🍃 FEUILLES FLOTTANTES -->
+<!-- ============================ -->
+
 <script>
 
-/* ===================================================== */
-/* LISTES AUGMENTEES */
-/* ===================================================== */
-
-let hauts = [
-"T-shirt","Chemise","Blazer","Top Dentelle","Top Sport","Top Luxe",
-"Hoodie","Pull","Veste Cuir","Débardeur","Crop Top","Bustier"
-];
-
-let bas = [
-"Jean","Pantalon","Short","Legging","Chino","Jupe","Mini Jupe",
-"Pantalon Slim","Cargo","Tailleur","Short Denim"
-];
-
-let fonds = [
-"Rooftop Skyline","Hôtel Luxe","Plage Privée","Villa Piscine",
-"Studio Photo","Rue Nuit","Forêt Lumineuse","Galerie Art",
-"Restaurant Chic","Appartement Moderne","Casino Luxe"
-];
-
-let angles = [
-"Face","Profil","3/4 Gauche","3/4 Droite",
-"Légère Contre-Plongée","Vue Hauteur Yeux"
-];
-
-/* ===================================================== */
-/* FILL SELECT */
-/* ===================================================== */
-
-function fill(id,list){
-let s=document.getElementById(id);
-list.forEach(item=>{
-let o=document.createElement("option");
-o.textContent=item;
-s.appendChild(o);
-});
+for(let i=0;i<60;i++){
+let leaf=document.createElement("div");
+leaf.innerHTML="🍃";
+leaf.style.position="fixed";
+leaf.style.left=Math.random()*100+"vw";
+leaf.style.top=Math.random()*100+"vh";
+leaf.style.fontSize=(20+Math.random()*40)+"px";
+leaf.style.opacity="0.3";
+leaf.style.animation="float "+(5+Math.random()*10)+"s infinite linear";
+leaf.style.pointerEvents="none";
+document.body.appendChild(leaf);
 }
 
-for(let i=18;i<=60;i++){
+let style=document.createElement("style");
+style.innerHTML=`
+@keyframes float{
+0%{transform:translateY(0) rotate(0deg);}
+50%{transform:translateY(-60px) rotate(20deg);}
+100%{transform:translateY(0) rotate(0deg);}
+}`;
+document.head.appendChild(style);
+
+</script>
+
+<!-- ============================ -->
+<!-- LISTES -->
+<!-- ============================ -->
+
+<script>
+
+/* HAUT */
+let hauts=[
+"T-shirt",
+"Hoodie",
+"Blazer",
+"Top Dentelle",
+"Top Sport",
+"Chemise Luxe",
+"Veste Cuir",
+"Crop Top",
+"Débardeur",
+"Top Minimal",
+"Top Oversized"
+];
+
+/* BAS */
+let bas=[
+"Jean",
+"Jean Slim",
+"Pantalon Chino",
+"Short",
+"Legging",
+"Jupe",
+"Mini Jupe",
+"Pantalon Large",
+"Cargo",
+"Tailleur"
+];
+
+/* FONDS */
+let fonds=[
+"Rooftop Skyline",
+"Hôtel Luxe",
+"Plage Privée",
+"Villa Piscine",
+"Rue Urbaine Nuit",
+"Studio Photo",
+"Galerie Art",
+"Jardin Tropical",
+"Forêt Lumineuse"
+];
+
+/* ANGLES */
+let angles=[
+"Vue Face",
+"Profil",
+"3/4 Gauche",
+"3/4 Droite",
+"Low Angle",
+"High Angle"
+];
+
+function fill(id,list){
+let select=document.getElementById(id);
+list.forEach(item=>{
 let opt=document.createElement("option");
-opt.textContent=i;
-document.getElementById("age").appendChild(opt);
+opt.textContent=item;
+select.appendChild(opt);
+});
 }
 
 fill("haut",hauts);
@@ -246,9 +271,9 @@ fill("bas",bas);
 fill("fond",fonds);
 fill("angle",angles);
 
-/* ===================================================== */
-/* GENERATE PROMPT (LOCKED RULES) */
-/* ===================================================== */
+/* ============================ */
+/* GENERATE PROMPT */
+/* ============================ */
 
 function generate(){
 
@@ -260,6 +285,7 @@ let fond=document.getElementById("fond").value;
 let angle=document.getElementById("angle").value;
 
 let prompt=`
+
 ${age} year old ${genre}
 
 Outfit:
@@ -269,19 +295,18 @@ Bottom: ${bas}
 Environment: ${fond}
 Camera Angle: ${angle}
 
-LOCKED RULES:
-- Always centered
-- Resolution 800x1000px
+MANDATORY RULES:
+- 800x1000px
+- Centered composition
 - 50mm lens
 - Cinematic lighting
 - Real skin texture
 - Background blur
 - Sunglasses from attached image
-- Sunglasses are main focal point
-- Never describe sunglasses as outfit
+- Sunglasses are main focus
+- Do NOT describe sunglasses as outfit
+- Always English
 - Professional photo
-- English only
-- Ultra realistic
 `;
 
 document.getElementById("output").value=prompt;
@@ -290,31 +315,10 @@ document.getElementById("output").value=prompt;
 /* COPY */
 
 function copyText(){
-navigator.clipboard.writeText(document.getElementById("output").value);
-alert("Copied ✅");
+let text=document.getElementById("output");
+text.select();
+document.execCommand("copy");
 }
-
-/* ===================================================== */
-/* BANANES FLOTTANTES */
-/* ===================================================== */
-
-function createBanana(){
-let b=document.createElement("div");
-b.innerHTML="🍌";
-b.className="banana";
-b.style.left=Math.random()*100+"vw";
-b.style.top=Math.random()*100+"vh";
-b.style.animationDuration=(5+Math.random()*10)+"s";
-document.body.appendChild(b);
-}
-
-for(let i=0;i<25;i++){
-createBanana();
-}
-
-setInterval(()=>{
-createBanana();
-},4000);
 
 </script>
 

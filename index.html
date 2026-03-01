@@ -4,278 +4,236 @@
 <meta charset="UTF-8">
 <title>Banana AI Generator</title>
 
+<script>
+/* ===============================
+   🔐 TOKEN (MET LE DANS ENV SUR RENDER)
+   =============================== */
+const HF_TOKEN = "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";
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
 
-/* =============================== */
-/* 🌿 FOND FEUILLAGE 3D */
-/* =============================== */
+/* =============================
+   🌿 BACKGROUND
+============================= */
 
 body{
 margin:0;
-font-family:Arial, sans-serif;
-
-background: linear-gradient(
-135deg,
-#0f3d0f,
-#145214,
-#1a6b1a
-);
-
-background-image:
-radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05) 2px, transparent 2px),
-radial-gradient(circle at 70% 60%, rgba(0,0,0,0.1) 3px, transparent 3px);
-
-background-size: cover;
-background-attachment: fixed;
-
-overflow-y:auto;
+font-family:Arial;
+background:#0b3d02;
+background-image:url("https://i.postimg.cc/FHC5G1FX/nano-banana-logo.png");
+background-size:cover;
+background-attachment:fixed;
+overflow-x:hidden;
 color:black;
-text-align:center;
 }
 
-/* =============================== */
-/* 🌟 TITRE */
-/* =============================== */
+/* TITLE */
 
 h1{
+text-align:center;
 color:white;
 font-weight:bold;
-font-size:42px;
+font-size:40px;
 text-shadow:0 0 20px lime;
-margin-top:20px;
 }
 
-/* =============================== */
-/* 🟡 BOUTONS */
-/* =============================== */
+/* =============================
+   BUTTONS
+============================= */
 
 button{
 background:yellow;
 color:black;
-padding:18px 25px;
+font-size:22px;
+padding:15px 30px;
 border:none;
-border-radius:15px;
-font-weight:bold;
-font-size:18px;
+border-radius:20px;
 cursor:pointer;
 margin:10px;
-box-shadow:0 0 20px rgba(255,255,0,0.7);
+font-weight:bold;
 transition:0.3s;
 }
 
 button:hover{
 transform:scale(1.1);
-box-shadow:0 0 40px yellow;
+box-shadow:0 0 20px yellow;
 }
 
-/* =============================== */
-/* 🟡 SELECTEURS */
-/* =============================== */
+button.generate{
+background:red;
+color:white;
+}
+
+button.copy{
+background:green;
+color:white;
+}
+
+/* =============================
+   SELECT
+============================= */
 
 select{
-background:#ffd000;
-color:black;
+background:gold;
+font-size:20px;
 padding:15px;
 border-radius:15px;
-font-size:18px;
 font-weight:bold;
-min-width:250px;
-margin:10px;
-box-shadow:0 0 15px rgba(0,0,0,0.3);
 }
-
-/* =============================== */
-/* CONTAINER */
-/* =============================== */
 
 .container{
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:30px;
-padding-bottom:100px;
+text-align:center;
+padding:40px;
 }
 
-/* =============================== */
-/* OUTPUT */
-/* =============================== */
+/* TEXTAREA */
 
 textarea{
 width:80%;
 height:200px;
+font-size:18px;
 border-radius:15px;
 padding:15px;
-font-size:16px;
-background:#0a2a0a;
-color:white;
-border:2px solid yellow;
 }
 
 </style>
 </head>
 <body>
 
-<h1>🍌 BANANA AI GENERATOR 🍌</h1>
+<h1>🍌 BANANA AI PROMPT GENERATOR</h1>
 
 <div class="container">
 
-<!-- ============================ -->
+<!-- ========================= -->
 <!-- PARAMETRES -->
-<!-- ============================ -->
+<!-- ========================= -->
 
-<div>
+Genre:
 <select id="genre">
 <option>Homme</option>
 <option>Femme</option>
 </select>
 
-<select id="age">
-<script>
-for(let i=18;i<=60;i++){
-document.write(`<option>${i}</option>`);
-}
-</script>
-</select>
-</div>
+Age:
+<select id="age"></select>
 
-<!-- ============================ -->
-<!-- VETEMENTS -->
-<!-- ============================ -->
-
-<h2 style="color:white;">👕 Haut</h2>
+Haut:
 <select id="haut"></select>
 
-<h2 style="color:white;">👖 Bas</h2>
+Bas:
 <select id="bas"></select>
 
-<h2 style="color:white;">🌴 Fond</h2>
+Fond:
 <select id="fond"></select>
 
-<h2 style="color:white;">🎥 Angle</h2>
-<select id="angle"></select>
+Angle:
+<select id="angle">
+<option>Face</option>
+<option>Profil</option>
+<option>3/4</option>
+<option>Dos</option>
+</select>
 
-<!-- ============================ -->
-<!-- GENERATION -->
-<!-- ============================ -->
+<br><br>
 
-<button onclick="generate()">🚀 GENERER</button>
-<button onclick="copyText()" style="background:green;color:white;">
-📋 COPIER
-</button>
+<button class="generate" onclick="generate()">🚀 GENERER</button>
+<button class="copy" onclick="copyText()">📋 COPIER</button>
+
+<br><br>
 
 <textarea id="output"></textarea>
 
 </div>
 
-<!-- ============================ -->
-<!-- 🍃 FEUILLES FLOTTANTES -->
-<!-- ============================ -->
-
 <script>
 
-for(let i=0;i<60;i++){
-let leaf=document.createElement("div");
-leaf.innerHTML="🍃";
-leaf.style.position="fixed";
-leaf.style.left=Math.random()*100+"vw";
-leaf.style.top=Math.random()*100+"vh";
-leaf.style.fontSize=(20+Math.random()*40)+"px";
-leaf.style.opacity="0.3";
-leaf.style.animation="float "+(5+Math.random()*10)+"s infinite linear";
-leaf.style.pointerEvents="none";
-document.body.appendChild(leaf);
+/* =============================
+   LISTES AUGMENTÉES
+============================= */
+
+let hauts = [
+"T-shirt","T-shirt Oversize","T-shirt Slim","Chemise","Blazer",
+"Top Dentelle","Top Sport","Hoodie","Sweat","Crop Top",
+"Débardeur","Veste Cuir","Top Luxe","Pull","Chemise Satin"
+];
+
+let bas = [
+"Jean","Jean Slim","Jean Wide","Pantalon","Chino",
+"Short","Short Denim","Legging","Jupe","Mini Jupe",
+"Pantalon Tailleur","Cargo","Jogging","Pantalon Large"
+];
+
+let fonds = [
+"Rooftop Skyline","Hôtel Luxe","Plage Privée","Villa Piscine",
+"Studio Photo","Rue Urbaine","Forêt Lumineuse",
+"Restaurant Luxe","Galerie Art","Intérieur Minimaliste"
+];
+
+/* AGE AUTO */
+
+let ageSelect = document.getElementById("age");
+for(let i=18;i<=60;i++){
+let opt=document.createElement("option");
+opt.textContent=i;
+ageSelect.appendChild(opt);
 }
 
-let style=document.createElement("style");
-style.innerHTML=`
-@keyframes float{
-0%{transform:translateY(0) rotate(0deg);}
-50%{transform:translateY(-60px) rotate(20deg);}
-100%{transform:translateY(0) rotate(0deg);}
-}`;
-document.head.appendChild(style);
-
-</script>
-
-<!-- ============================ -->
-<!-- LISTES -->
-<!-- ============================ -->
-
-<script>
-
-/* HAUT */
-let hauts=[
-"T-shirt",
-"Hoodie",
-"Blazer",
-"Top Dentelle",
-"Top Sport",
-"Chemise Luxe",
-"Veste Cuir",
-"Crop Top",
-"Débardeur",
-"Top Minimal",
-"Top Oversized"
-];
-
-/* BAS */
-let bas=[
-"Jean",
-"Jean Slim",
-"Pantalon Chino",
-"Short",
-"Legging",
-"Jupe",
-"Mini Jupe",
-"Pantalon Large",
-"Cargo",
-"Tailleur"
-];
-
-/* FONDS */
-let fonds=[
-"Rooftop Skyline",
-"Hôtel Luxe",
-"Plage Privée",
-"Villa Piscine",
-"Rue Urbaine Nuit",
-"Studio Photo",
-"Galerie Art",
-"Jardin Tropical",
-"Forêt Lumineuse"
-];
-
-/* ANGLES */
-let angles=[
-"Vue Face",
-"Profil",
-"3/4 Gauche",
-"3/4 Droite",
-"Low Angle",
-"High Angle"
-];
+/* FILL SELECT */
 
 function fill(id,list){
-let select=document.getElementById(id);
+let s=document.getElementById(id);
 list.forEach(item=>{
-let opt=document.createElement("option");
-opt.textContent=item;
-select.appendChild(opt);
+let o=document.createElement("option");
+o.textContent=item;
+s.appendChild(o);
 });
 }
 
 fill("haut",hauts);
 fill("bas",bas);
 fill("fond",fonds);
-fill("angle",angles);
 
-/* ============================ */
-/* GENERATE PROMPT */
-/* ============================ */
+/* =============================
+   IA HUGGING FACE
+============================= */
 
-function generate(){
+async function generateWithAI(prompt){
+
+const response = await fetch(
+"https://router.huggingface.co/hf-inference/models/distilgpt2",
+{
+method:"POST",
+headers:{
+"Authorization":"Bearer "+HF_TOKEN,
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+inputs:prompt,
+parameters:{
+max_new_tokens:250,
+temperature:0.9
+}
+})
+}
+);
+
+const data = await response.json();
+
+if(data.error){
+return "🔥 ERROR: "+data.error;
+}
+
+return data[0].generated_text;
+}
+
+/* =============================
+   GENERATE PROMPT
+============================= */
+
+async function generate(){
 
 let genre=document.getElementById("genre").value;
 let age=document.getElementById("age").value;
@@ -284,40 +242,41 @@ let bas=document.getElementById("bas").value;
 let fond=document.getElementById("fond").value;
 let angle=document.getElementById("angle").value;
 
-let prompt=`
+let basePrompt=`
+Create a professional fashion prompt.
 
-${age} year old ${genre}
+${age} years old ${genre}
 
-Outfit:
 Top: ${haut}
 Bottom: ${bas}
-
 Environment: ${fond}
-Camera Angle: ${angle}
+Angle: ${angle}
 
-MANDATORY RULES:
+Rules:
 - 800x1000px
 - Centered composition
-- 50mm lens
 - Cinematic lighting
 - Real skin texture
-- Background blur
 - Sunglasses from attached image
-- Sunglasses are main focus
-- Do NOT describe sunglasses as outfit
-- Always English
+- Sunglasses must be main focus
+- Never describe sunglasses as outfit
 - Professional photo
 `;
 
-document.getElementById("output").value=prompt;
+let result=await generateWithAI(basePrompt);
+
+document.getElementById("output").value=result;
 }
 
-/* COPY */
+/* =============================
+   COPY
+============================= */
 
 function copyText(){
 let text=document.getElementById("output");
 text.select();
 document.execCommand("copy");
+alert("Copied ✅");
 }
 
 </script>

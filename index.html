@@ -1,248 +1,348 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nano Banana Prompt Generator</title>
+<title>Banana v2</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
+
+/* ============================= */
+/* 🌿 THEME GLOBAL */
+/* ============================= */
+
 body{
 margin:0;
 font-family: Arial, sans-serif;
-background: linear-gradient(135deg,#0b3d02,#1e7a1e);
+background: #0b3d02;
 color:black;
-overflow-x:hidden;
-}
-
-/* Bananas décoratives */
-.banana{
-position:absolute;
-font-size:30px;
-opacity:0.3;
-}
-
-.container{
-padding:30px;
-position:relative;
-}
-
-.title{
+background-image:url("https://i.postimg.cc/FHC5G1FX/nano-banana-logo.png");
+background-size:cover;
+background-attachment:fixed;
 text-align:center;
-font-size:40px;
-color:white;
--webkit-text-stroke:1px black;
-font-weight:bold;
 }
 
-/* Boutons */
+/* TITRE */
+
+h1{
+color:red;
+font-size:32px;
+text-align:center;
+}
+
+/* ============================= */
+/* BUTTONS */
+/* ============================= */
+
 button{
-background:#8b0000;
-color:black;
-font-size:18px;
+background:red;
+color:white;
 padding:10px 15px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 cursor:pointer;
+margin:5px;
 font-weight:bold;
+}
+
+button.copy{
+background:green;
 }
 
 button:hover{
 opacity:0.8;
 }
 
-/* Select */
+/* DROPDOWN */
+
 select{
 background:#d4a017;
-font-size:18px;
+color:black;
 padding:8px;
-border-radius:6px;
-border:none;
+border-radius:8px;
 font-weight:bold;
 }
 
-/* Sections */
-.section{
-background:rgba(255,255,255,0.8);
-padding:15px;
-margin:10px 0;
-border-radius:10px;
+/* ============================= */
+/* CONTAINER */
+/* ============================= */
+
+.container{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:20px;
+padding:20px;
 }
 
-.hidden{
-display:none;
+/* 3D */
+
+#scene3D{
+width:80%;
+height:400px;
+border:2px solid white;
+border-radius:15px;
+background:black;
 }
 
-#output{
-background:white;
-padding:15px;
-border-radius:10px;
-min-height:80px;
-white-space:pre-wrap;
-}
-
-.copy-btn{
-background:red;
-color:white;
-margin-top:10px;
-}
 </style>
+
 </head>
 <body>
 
-<h1 class="title">🌿 Nano Banana Prompt Generator 🍌</h1>
+<h1>🔥 Nano Banana Prompt Generator</h1>
 
 <div class="container">
 
-<!-- Sélecteur Genre -->
-<div style="position:absolute;top:20px;right:20px;">
-<select id="gender">
-<option value="homme">👨 Homme</option>
-<option value="femme">👩 Femme</option>
-</select>
-</div>
+<!-- ============================= -->
+<!-- PARAMETRES -->
+<!-- ============================= -->
 
-<!-- Age -->
 <div>
-<label><strong>Age</strong></label><br>
+<label>Genre :</label>
+<select id="genre">
+<option>Homme</option>
+<option>Femme</option>
+</select>
+
+<label>Age :</label>
 <select id="age">
 <script>
 for(let i=18;i<=60;i++){
-document.write(`<option value="${i}">${i}</option>`);
+document.write(`<option>${i}</option>`);
 }
 </script>
 </select>
 </div>
 
-<!-- Vêtements -->
-<div class="section">
-<h3>Vêtements</h3>
+<!-- VETEMENTS -->
 
-<!-- Haut -->
-<button onclick="toggle('hautMenu')">Haut</button>
-<div id="hautMenu" class="hidden"></div>
+<h2>👕 Vêtements</h2>
 
-<br><br>
+<select id="haut"></select>
+<select id="bas"></select>
 
-<!-- Bas -->
-<button onclick="toggle('basMenu')">Bas</button>
-<div id="basMenu" class="hidden"></div>
+<button onclick="toggleRobe()">Robe / Jupe</button>
 
-<br>
+<h2>🌿 Fond</h2>
+<select id="fond"></select>
 
-<button id="robeBtn" class="hidden" onclick="alert('Robe/Jupe options')">
-Robe / Jupe
+<h2>🎥 Angle</h2>
+<select id="angle" onchange="setAngle(this.value)">
+<option value="face">Face</option>
+<option value="profile">Profil</option>
+<option value="threeQuarter">3/4</option>
+<option value="back">Dos</option>
+</select>
+
+<!-- ============================= -->
+<!-- GENERATION -->
+<!-- ============================= -->
+
+<button onclick="generate()" class="generate">
+🚀 Générer
 </button>
 
+<button onclick="copyText()" class="copy">
+📋 Copier
+</button>
+
+<textarea id="output" rows="8" style="width:80%;"></textarea>
+
+<!-- ============================= -->
+<!-- 3D SCENE -->
+<!-- ============================= -->
+
+<h2>🧊 Visualisation 3D</h2>
+
+<div id="scene3D"></div>
+
+<button onclick="zoomIn()">Zoom +</button>
+<button onclick="zoomOut()">Zoom -</button>
+
+<input type="range" min="2" max="15" step="0.1" value="5"
+oninput="setZoom(this.value)">
+
 </div>
 
-<!-- Générer -->
-<button style="width:100%;" onclick="generate()">🔥 C’est parti !</button>
-
-<h3>Prompt Généré :</h3>
-<div id="output"></div>
-<button class="copy-btn" onclick="copyText()">📋 Copier</button>
-
-</div>
+<!-- ============================= -->
+<!-- SCRIPT 3D + LOGIQUE -->
+<!-- ============================= -->
 
 <script>
 
-/* Bananas décoratives */
-for(let i=0;i<25;i++){
-let banana=document.createElement("div");
-banana.innerHTML="🍌";
-banana.className="banana";
-banana.style.left=Math.random()*100+"vw";
-banana.style.top=Math.random()*100+"vh";
-banana.style.fontSize=Math.random()*40+10+"px";
-document.body.appendChild(banana);
+/* ============================= */
+/* LISTES */
+/* ============================= */
+
+let hauts = [
+"T-shirt","Chemise","Blazer","Top dentelle","Veste cuir","Débardeur","Hoodie"
+];
+
+let bas = [
+"Jean","Pantalon","Short","Jupe","Legging","Chino"
+];
+
+let fonds = [
+"Rooftop skyline",
+"Hôtel luxe",
+"Plage privée",
+"Villa piscine",
+"Rue urbaine nuit"
+];
+
+/* Inject options */
+
+function fillSelect(id,list){
+let select = document.getElementById(id);
+list.forEach(item=>{
+let opt = document.createElement("option");
+opt.textContent = item;
+select.appendChild(opt);
+});
 }
 
-/* Toggle menu */
-function toggle(id){
-let el=document.getElementById(id);
-el.classList.toggle("hidden");
+fillSelect("haut",hauts);
+fillSelect("bas",bas);
+fillSelect("fond",fonds);
+
+/* ============================= */
+/* GENERATION PROMPT */
+/* ============================= */
+
+function generate(){
+
+let genre = document.getElementById("genre").value;
+let age = document.getElementById("age").value;
+let haut = document.getElementById("haut").value;
+let bas = document.getElementById("bas").value;
+let fond = document.getElementById("fond").value;
+let angle = document.getElementById("angle").value;
+
+let prompt = `
+${age} year old ${genre}.
+
+Outfit:
+Top: ${haut}
+Bottom: ${bas}
+
+Environment: ${fond}
+
+Camera Angle: ${angle}
+
+Rules:
+- Perfectly centered
+- 800x1000px
+- 50mm lens
+- Cinematic lighting
+- Real skin texture
+- Sunglasses from attached image
+- Sunglasses are main focal point
+- Never describe sunglasses as outfit
+- Professional photo
+- Background blur
+- High realism
+`;
+
+document.getElementById("output").value = prompt;
 }
 
-/* Liste Haut */
-const hauts = `
-👕 Hauts Classiques
-T-shirt
-T-shirt oversize
-T-shirt coupe normale
-T-shirt coupe slim
-T-shirt basique
-Chemise à manches longues
-Chemise à manches courtes
+/* ============================= */
+/* COPY */
+/* ============================= */
 
-🔥 Hauts Streetwear
-Sweat à capuche
-Sweat oversize
-Hoodie graphique
-Sweat col rond
+function copyText(){
+let text = document.getElementById("output");
+text.select();
+document.execCommand("copy");
+}
 
-💎 Hauts Élégants
-Blazer
-Blouse satinée
-Haut en soie
-Chemise formelle
+/* ============================= */
+/* ROBE BUTTON */
+/* ============================= */
 
-🌸 Hauts Femme / Mode
-Crop top
-Top corset
-Top dentelle
+function toggleRobe(){
+alert("Mode robe / jupe activé (adapter prompt si femme)");
+}
 
-🖤 Hauts Cuir / Luxe
-Veste en cuir
-Haut gothique
+/* ============================= */
+/* THREE JS 3D */
+/* ============================= */
 
-🏖 Hauts Été
-Débardeur
-Top plage
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(75,1,0.1,1000);
+let renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(document.getElementById("scene3D").clientWidth,400);
+document.getElementById("scene3D").appendChild(renderer.domElement);
 
-💪 Hauts Sport
-Top de sport
-`;
+let light = new THREE.DirectionalLight(0xffffff,1);
+light.position.set(5,5,5);
+scene.add(light);
 
-document.getElementById("hautMenu").innerText=hauts;
+let geometry = new THREE.BoxGeometry(1,2,1);
+let material = new THREE.MeshStandardMaterial({color:0x00ff88});
+let avatar = new THREE.Mesh(geometry,material);
+scene.add(avatar);
 
-/* Liste Bas */
-const bas = `
-Pantalon
-Jean
-Short
-Jupe
-Legging
-Jogging
-Survêtement
-`;
+camera.position.z = 5;
 
-document.getElementById("basMenu").innerText=bas;
+/* ============================= */
+/* ROTATION */
+/* ============================= */
 
-/* Affichage dynamique Femme */
-document.getElementById("gender").addEventListener("change",function(){
-if(this.value==="femme"){
-document.getElementById("robeBtn").classList.remove("hidden");
-}else{
-document.getElementById("robeBtn").classList.add("hidden");
+let isDragging=false;
+renderer.domElement.addEventListener("mousedown",()=>isDragging=true);
+renderer.domElement.addEventListener("mouseup",()=>isDragging=false);
+renderer.domElement.addEventListener("mousemove",(e)=>{
+if(isDragging){
+avatar.rotation.y += e.movementX * 0.01;
 }
 });
 
-/* Génération */
-function generate(){
-let gender=document.getElementById("gender").value;
-let age=document.getElementById("age").value;
+/* ============================= */
+/* ANGLE SELECT */
+/* ============================= */
 
-let text=`Prompt Nano Banana\nGenre: ${gender}\nAge: ${age}\n`;
-
-document.getElementById("output").innerText=text;
+function setAngle(val){
+if(val==="face") avatar.rotation.y=0;
+if(val==="profile") avatar.rotation.y=Math.PI/2;
+if(val==="threeQuarter") avatar.rotation.y=Math.PI/4;
+if(val==="back") avatar.rotation.y=Math.PI;
 }
 
-/* Copier */
-function copyText(){
-let text=document.getElementById("output").innerText;
-navigator.clipboard.writeText(text);
-alert("Copié !");
+/* ============================= */
+/* ZOOM */
+/* ============================= */
+
+let minZoom=2;
+let maxZoom=15;
+
+function zoomIn(){
+camera.position.z -=0.5;
+if(camera.position.z<minZoom) camera.position.z=minZoom;
 }
+
+function zoomOut(){
+camera.position.z +=0.5;
+if(camera.position.z>maxZoom) camera.position.z=maxZoom;
+}
+
+function setZoom(val){
+camera.position.z = parseFloat(val);
+}
+
+renderer.domElement.addEventListener("wheel",(e)=>{
+camera.position.z += e.deltaY*0.01;
+});
+
+/* ANIMATION */
+
+function animate(){
+requestAnimationFrame(animate);
+renderer.render(scene,camera);
+}
+animate();
 
 </script>
 

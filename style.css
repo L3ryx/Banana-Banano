@@ -1,0 +1,46 @@
+/* ========================= */
+/* BANANA PREMIUM STYLE */
+/* ========================= */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0b3d02;
+    background-image: url("https://i.postimg.cc/FHC5G1FX/nano-banana-logo.png");
+    background-size: cover;
+    background-attachment: fixed;
+    color: black;
+    text-align: center;
+}
+
+/* TITRE */
+h1 {
+    color: white;
+    font-weight: bold;
+    font-size: 40px;
+}
+
+/* BOUTONS */
+button {
+    background: yellow;
+    color: black;
+    font-size: 20px;
+    padding: 15px 25px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+/* SELECT */
+select {
+    background: #d4a017;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+}
